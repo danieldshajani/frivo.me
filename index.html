@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="frivo tracks every expiration date in your fridge, so you never waste food again."/>
+<meta property="og:title" content="frivo — Never miss an expiration."/>
+<meta property="og:description" content="Scan. Track. Enjoy."/>
+<meta property="og:url" content="https://frivo.me"/>
+<title>frivo — Never miss an expiration.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2033;
+  --yellow:#F6C94A;
+  --yellow-dim:rgba(246,201,74,.12);
+  --green:#6B8C55;
+  --cream:#FAFAF8;
+  --white:#FFFFFF;
+  --text:#1B2033;
+  --muted:#6C7280;
+  --border:rgba(27,32,51,.08);
+  --border-med:rgba(27,32,51,.12);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--cream);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── NAV ─────────────────────────────── */
+.nav{position:fixed;inset:0 0 auto;height:60px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;z-index:100;transition:background .3s,box-shadow .3s}
+.nav.scrolled{background:rgba(250,250,248,.88);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:0 1px 0 var(--border)}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-name{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--navy)}
+.nav-links{display:flex;align-items:center;gap:30px;list-style:none}
+.nav-links a{font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:var(--navy)}
+.nav-cta{background:var(--navy);color:#fff!important;padding:9px 20px;border-radius:100px;font-size:14px!important;font-weight:600!important;transition:box-shadow .2s,transform .2s!important}
+.nav-cta:hover{box-shadow:0 6px 20px rgba(27,32,51,.28);transform:translateY(-1px);color:#fff!important}
+
+/* ── HERO ─────────────────────────────── */
+.hero{min-height:100vh;display:flex;align-items:center;padding:80px 80px 60px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 55% 55% at 72% 34%, rgba(246,201,74,.13) 0%,transparent 60%),
+  radial-gradient(ellipse 35% 45% at 14% 72%, rgba(107,140,85,.08) 0%,transparent 55%),
+  var(--cream);pointer-events:none}
+/* grain overlay */
+.hero-bg::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:.028;pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.05fr .95fr;gap:72px;align-items:center;position:relative;z-index:1}
+.hero-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.3px;margin-bottom:28px}
+.hero-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+.hero-h1{font-size:clamp(56px,7vw,96px);font-weight:900;line-height:1.01;letter-spacing:-3.5px;color:var(--navy);margin-bottom:24px}
+.hero-h1 mark{background:linear-gradient(135deg,#F6C94A 0%,#C9920D 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-color:transparent}
+.hero-body{font-size:18px;line-height:1.7;color:var(--muted);max-width:420px;margin-bottom:44px}
+.hero-actions{display:flex;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:14px 28px;border-radius:100px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;font-family:inherit;border:none;transition:transform .18s,box-shadow .18s,background .18s}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(27,32,51,.28)}
+.btn-ghost{background:transparent;color:var(--muted);padding:14px 8px;font-weight:500;font-size:14px}
+.btn-ghost:hover{color:var(--navy)}
+.btn-arr{display:inline-flex;transition:transform .18s}
+.btn-primary:hover .btn-arr,.btn-ghost:hover .btn-arr{transform:translateX(3px)}
+
+/* ── PHONE ─────────────────────────────── */
+.hero-visual{display:flex;justify-content:center;align-items:center;position:relative;padding:40px 0}
+.phone-halo{position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(246,201,74,.2) 0%,transparent 65%);pointer-events:none;animation:halo-pulse 4s ease-in-out infinite}
+@keyframes halo-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.75}}
+.phone-wrap{animation:lift 7s ease-in-out infinite;position:relative}
+@keyframes lift{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.phone{width:270px;height:558px;background:#111720;border-radius:50px;padding:13px;box-shadow:0 56px 100px rgba(0,0,0,.38),0 20px 40px rgba(0,0,0,.14),inset 0 0 0 .5px rgba(255,255,255,.07)}
+.screen{background:#F9F9F7;border-radius:38px;height:100%;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.d-island{position:absolute;top:0;left:50%;transform:translateX(-50%);width:84px;height:26px;background:#111720;border-radius:0 0 18px 18px;z-index:2}
+.app-bar{padding:42px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06)}
+.app-brand{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
+.app-actions{display:flex;gap:7px}
+.app-btn{width:27px;height:27px;border-radius:50%;background:rgba(27,32,51,.07);display:flex;align-items:center;justify-content:center}
+.app-section-lbl{padding:12px 16px 5px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.app-list{flex:1;overflow:hidden;padding:0 12px}
+.app-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05)}
+.row-ico{width:34px;height:34px;background:rgba(0,0,0,.04);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.row-info{flex:1;min-width:0}
+.row-name{font-size:12px;font-weight:600;color:var(--navy)}
+.row-cat{font-size:10.5px;color:var(--muted);margin-top:1px}
+.row-days{font-size:11px;font-weight:700;text-align:right}
+.row-date{font-size:10px;color:var(--muted);text-align:right;margin-top:1px}
+.c-red{color:#FF3B30}.c-amb{color:#FF9500}.c-grn{color:#2DAA50}
+.app-tabbar{padding:8px 0 18px;display:flex;justify-content:space-around;border-top:1px solid rgba(0,0,0,.06)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;font-weight:500;color:var(--muted)}
+.tab.on{color:var(--navy)}
+
+/* floating notification near phone */
+.float-pill{position:absolute;bottom:100px;left:-196px;background:var(--white);border-radius:14px;padding:12px 14px;box-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:10px;width:210px;animation:lift2 7s ease-in-out 1.5s infinite;border:1px solid var(--border);z-index:5}
+@keyframes lift2{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.pill-icon{width:28px;height:28px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pill-app{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.2px}
+.pill-text{font-size:12px;font-weight:600;color:var(--navy);line-height:1.35;margin-top:1px}
+.pill-time{font-size:10px;color:var(--muted);position:absolute;top:12px;right:14px}
+
+/* ── BENTO FEATURES ─────────────────────── */
+.features{padding:120px 80px;background:var(--cream)}
+.feat-inner{max-width:1200px;margin:0 auto}
+.feat-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:56px;gap:40px}
+.feat-eyebrow{font-size:11.5px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.3px;margin-bottom:12px}
+.feat-h2{font-size:clamp(32px,3.8vw,50px);font-weight:800;letter-spacing:-1.5px;color:var(--navy);line-height:1.08}
+.feat-sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:320px;flex-shrink:0;align-self:flex-end;padding-bottom:4px}
+
+/* Bento grid */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:16px}
+.bc1{grid-column:span 2}
+.bc4{grid-column:span 2}
+.bcard{border-radius:24px;overflow:hidden;display:flex;flex-direction:column;min-height:360px;transition:transform .3s,box-shadow .3s;position:relative}
+.bcard:hover{transform:translateY(-4px);box-shadow:0 24px 56px rgba(0,0,0,.10)}
+.bcard-vis{flex:1;display:flex;align-items:center;justify-content:center;padding:36px 36px 28px;position:relative;overflow:hidden;min-height:220px}
+.bcard-text{padding:24px 30px 28px}
+.bcard-title{font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px}
+.bcard-desc{font-size:13.5px;line-height:1.68}
+
+/* Card 1 — Scan (dark navy) */
+.bc-scan{background:var(--navy)}
+.bc-scan .bcard-title{color:#fff}
+.bc-scan .bcard-desc{color:rgba(255,255,255,.5)}
+
+/* Barcode */
+.barcode-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px}
+.barcode-inner{position:relative}
+.barcode-svg{display:block;width:180px;height:60px;opacity:.85}
+.scan-glow{position:absolute;left:-4px;right:-4px;height:2px;background:var(--yellow);box-shadow:0 0 10px var(--yellow),0 0 24px rgba(246,201,74,.7);top:0;animation:scan 2.6s ease-in-out infinite}
+@keyframes scan{0%,100%{top:0;opacity:1}48%{top:58px;opacity:1}50%{top:58px;opacity:0}52%{top:0;opacity:0}}
+.barcode-number{font-size:11px;font-weight:500;letter-spacing:2px;color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}
+
+/* Card 2 — Track (white) */
+.bc-track{background:var(--white);border:1px solid var(--border)}
+.bc-track .bcard-title{color:var(--navy)}
+.bc-track .bcard-desc{color:var(--muted)}
+.mini-list{width:100%;display:flex;flex-direction:column;gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--cream)}
+.mini-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.mini-row:last-child{border-bottom:none}
+.mini-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mini-name{font-size:12.5px;font-weight:600;color:var(--navy);flex:1}
+.mini-days{font-size:11.5px;font-weight:700}
+
+/* Card 3 — Remind (yellow) */
+.bc-remind{background:#FEF3C0}
+.bc-remind .bcard-title{color:var(--navy)}
+.bc-remind .bcard-desc{color:rgba(27,32,51,.55)}
+.notif-card{width:100%;max-width:240px;background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:0 6px 24px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.05)}
+.notif-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.notif-app-ico{width:22px;height:22px;border-radius:6px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notif-app-name{font-size:11px;font-weight:700;color:var(--muted);flex:1}
+.notif-time-lbl{font-size:10.5px;color:var(--muted)}
+.notif-title{font-size:13px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:3px}
+.notif-body{font-size:12px;color:var(--muted);line-height:1.45}
+
+/* Card 4 — Insight (dark) */
+.bc-insight{background:#151A28}
+.bc-insight .bcard-title{color:#fff}
+.bc-insight .bcard-desc{color:rgba(255,255,255,.45)}
+.week-view{display:flex;gap:10px;width:100%;justify-content:center}
+.week-day{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.wd-label{font-size:9.5px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px}
+.wd-dots{display:flex;flex-direction:column;gap:4px;min-height:52px;justify-content:flex-end}
+.wd-dot{width:8px;height:8px;border-radius:50%}
+.wd-empty{width:8px;height:8px}
+
+/* ── HOW IT WORKS ─────────────────────── */
+.hiw{padding:120px 80px;background:var(--cream)}
+.hiw-inner{max-width:1200px;margin:0 auto}
+.hiw-head{margin-bottom:72px}
+.hiw-eyebrow{font-size:11.5px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.3px;margin-bottom:12px}
+.hiw-h2{font-size:clamp(32px,3.8vw,50px);font-weight:800;letter-spacing:-1.5px;color:var(--navy);line-height:1.08}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step{padding:36px 32px;background:var(--white);border-radius:24px;border:1px solid var(--border);position:relative;overflow:hidden;transition:box-shadow .3s}
+.step::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yellow) 0%,transparent 100%);opacity:0;transition:opacity .3s}
+.step:hover{box-shadow:0 12px 40px rgba(0,0,0,.07)}
+.step:hover::before{opacity:1}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--navy);color:#fff;font-size:13px;font-weight:700;margin-bottom:28px;letter-spacing:-.2px}
+.step-title{font-size:18px;font-weight:700;color:var(--navy);letter-spacing:-.3px;margin-bottom:10px}
+.step-desc{font-size:14.5px;line-height:1.72;color:var(--muted)}
+
+/* ── WAITLIST — dark ────────────────────── */
+.waitlist{padding:120px 80px;background:var(--navy);text-align:center;position:relative;overflow:hidden}
+.waitlist::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(246,201,74,.07) 0%,transparent 70%);pointer-events:none}
+.wl-inner{max-width:520px;margin:0 auto;position:relative;z-index:1}
+.wl-eyebrow{font-size:11.5px;font-weight:700;color:rgba(246,201,74,.7);text-transform:uppercase;letter-spacing:1.3px;margin-bottom:14px}
+.wl-h2{font-size:clamp(34px,4vw,54px);font-weight:800;letter-spacing:-2px;color:#fff;line-height:1.06;margin-bottom:16px}
+.wl-body{font-size:17px;color:rgba(255,255,255,.5);line-height:1.68;margin-bottom:44px}
+.wl-form{display:flex;gap:10px;margin-bottom:14px}
+.wl-input{flex:1;padding:15px 20px;border-radius:100px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);font-size:15px;font-family:inherit;color:#fff;outline:none;transition:border-color .2s,background .2s,box-shadow .2s}
+.wl-input:focus{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.1);box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+.wl-input::placeholder{color:rgba(255,255,255,.32)}
+.wl-submit{background:var(--yellow);color:var(--navy);padding:15px 28px;border-radius:100px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:transform .18s,box-shadow .18s}
+.wl-submit:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(246,201,74,.35)}
+.wl-note{font-size:12.5px;color:rgba(255,255,255,.28)}
+.wl-count{display:none;align-items:center;justify-content:center;gap:9px;margin-bottom:36px;font-size:14px;color:rgba(255,255,255,.45);letter-spacing:-.1px}
+.wl-count.visible{display:flex}
+.wl-count-dot{width:7px;height:7px;border-radius:50%;background:#2DAA50;box-shadow:0 0 8px rgba(45,170,80,.7);flex-shrink:0}
+#wl-count-num{font-weight:700;color:rgba(255,255,255,.8);font-variant-numeric:tabular-nums}
+.success{display:none;padding:28px 32px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;text-align:center}
+.success.show{display:block}
+.success-check{width:40px;height:40px;border-radius:50%;background:rgba(45,170,80,.15);border:1px solid rgba(45,170,80,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.success-h{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px}
+.success-p{font-size:14px;color:rgba(255,255,255,.45)}
+
+/* ── FOOTER ─────────────────────────────── */
+footer{background:#11151F;padding:56px 80px 36px}
+.ft-inner{max-width:1200px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:28px}
+.ft-logo{display:flex;align-items:center;gap:9px;text-decoration:none;margin-bottom:10px}
+.ft-logo span{font-size:18px;font-weight:800;letter-spacing:-.5px;color:#fff}
+.ft-tagline{font-size:13px;color:rgba(255,255,255,.32);margin-bottom:14px}
+.ft-email a{font-size:13px;color:rgba(255,255,255,.4);text-decoration:none;transition:color .15s}
+.ft-email a:hover{color:#fff}
+.ft-nav{display:flex;gap:52px}
+.ft-col h4{font-size:11px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ft-col ul a,.ft-col ul button{font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .15s;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;text-align:left}
+.ft-col ul a:hover,.ft-col ul button:hover{color:#fff}
+.ft-bottom{display:flex;justify-content:space-between;align-items:center}
+.ft-copy{font-size:12px;color:rgba(255,255,255,.22)}
+.ft-legal{display:flex;gap:18px}
+.ft-legal button{font-size:12px;color:rgba(255,255,255,.22);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;transition:color .15s}
+.ft-legal button:hover{color:rgba(255,255,255,.5)}
+
+/* ── MODALS ─────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-bg.open{opacity:1;pointer-events:auto}
+.modal{background:var(--white);border-radius:28px 28px 0 0;max-width:700px;width:100%;max-height:88vh;overflow-y:auto;padding:44px 52px 60px;transform:translateY(40px);transition:transform .38s cubic-bezier(.32,.72,0,1)}
+.modal-bg.open .modal{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:rgba(0,0,0,.09);border-radius:2px;margin:-24px auto 30px}
+.modal-close{float:right;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.06);border:none;cursor:pointer;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;margin-bottom:-28px;position:sticky;top:0;z-index:1;font-family:inherit}
+.modal-close:hover{background:rgba(0,0,0,.1)}
+.modal h2{font-size:28px;font-weight:800;letter-spacing:-.8px;color:var(--navy);margin-bottom:4px}
+.modal .modal-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.modal h3{font-size:16px;font-weight:700;color:var(--navy);margin:26px 0 8px}
+.modal p{font-size:14.5px;line-height:1.78;color:#4A4A58;margin-bottom:8px}
+.modal a{color:var(--navy)}
+.note-box{background:rgba(246,201,74,.1);border:1px solid rgba(246,201,74,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:#8B6800;line-height:1.5;margin:10px 0}
+
+/* ── COOKIE ─────────────────────────────── */
+.cookie{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--navy);padding:14px 16px 14px 20px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.3);display:flex;align-items:center;gap:14px;max-width:600px;width:calc(100% - 32px);z-index:150;transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.cookie.show{transform:translateX(-50%) translateY(0)}
+.cookie-txt{font-size:13px;color:rgba(255,255,255,.6);line-height:1.45;flex:1;min-width:0}
+.cookie-txt strong{color:#fff}
+.cookie-btns{display:flex;gap:6px;flex-shrink:0}
+.cookie-decline{background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;padding:8px 14px;border-radius:100px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s}
+.cookie-decline:hover{background:rgba(255,255,255,.14)}
+.cookie-accept{background:var(--yellow);color:var(--navy);border:none;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:transform .15s}
+.cookie-accept:hover{transform:scale(1.04)}
+
+/* ── SCROLL REVEAL ─────────────────────── */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+.reveal:nth-child(2){transition-delay:.09s}
+.reveal:nth-child(3){transition-delay:.18s}
+.reveal:nth-child(4){transition-delay:.27s}
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media(max-width:1024px){.hero,.features,.hiw,.waitlist{padding:80px 40px}footer{padding:48px 40px 32px}.nav{padding:0 24px}.float-pill{display:none}}
+@media(max-width:768px){.hero-inner{grid-template-columns:1fr}.hero-visual{display:none}.bento{grid-template-columns:1fr}.bc1,.bc4{grid-column:span 1}.steps{grid-template-columns:1fr}.wl-form{flex-direction:column}.ft-top{flex-direction:column;gap:36px}.ft-nav{flex-direction:column;gap:28px}.nav-links{display:none}.modal{padding:32px 24px 48px}.feat-header{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="#" class="logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#1B2033"/>
+      <path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/>
+      <path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/>
+      <path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/>
+    </svg>
+    <span class="logo-name">frivo</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#waitlist" class="nav-cta">Join waitlist</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-label"><div class="hero-dot"></div>Coming to iOS &amp; Android</div>
+      <h1 class="hero-h1">Stop throwing<br>food <mark>away.</mark></h1>
+      <p class="hero-body">frivo tracks every expiration date in your fridge and tells you what to use before it goes bad. No more guessing. No more waste.</p>
+      <div class="hero-actions">
+        <a href="#waitlist" class="btn btn-primary">Get early access <span class="btn-arr">→</span></a>
+        <a href="#features" class="btn btn-ghost">See how it works <span class="btn-arr">↓</span></a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-halo"></div>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="d-island"></div>
+            <div class="app-bar">
+              <div class="app-brand">
+                <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#1B2033"/><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
+                frivo
+              </div>
+              <div class="app-actions">
+                <div class="app-btn"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><rect width="10" height="1.3" rx=".65" fill="#1B2033"/><rect y="3.35" width="10" height="1.3" rx=".65" fill="#1B2033"/><rect y="6.7" width="6.5" height="1.3" rx=".65" fill="#1B2033"/></svg></div>
+                <div class="app-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><line x1="5" y1=".5" x2="5" y2="9.5" stroke="#1B2033" stroke-width="1.4" stroke-linecap="round"/><line x1=".5" y1="5" x2="9.5" y2="5" stroke="#1B2033" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              </div>
+            </div>
+            <div class="app-section-lbl">Expiring Soon</div>
+            <div class="app-list">
+              <div class="app-row">
+                <div class="row-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+                <div class="row-info"><div class="row-name">Greek Yogurt</div><div class="row-cat">Dairy</div></div>
+                <div><div class="row-days c-red">2 days</div><div class="row-date">May 12</div></div>
+              </div>
+              <div class="app-row">
+                <div class="row-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+                <div class="row-info"><div class="row-name">Strawberries</div><div class="row-cat">Fruit</div></div>
+                <div><div class="row-days c-amb">4 days</div><div class="row-date">May 14</div></div>
+              </div>
+              <div class="app-row">
+                <div class="row-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+                <div class="row-info"><div class="row-name">Chicken Breast</div><div class="row-cat">Meat</div></div>
+                <div><div class="row-days c-amb">6 days</div><div class="row-date">May 16</div></div>
+              </div>
+              <div class="app-row">
+                <div class="row-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2DAA50" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+                <div class="row-info"><div class="row-name">Spinach</div><div class="row-cat">Vegetable</div></div>
+                <div><div class="row-days c-grn">8 days</div><div class="row-date">May 18</div></div>
+              </div>
+              <div class="app-row">
+                <div class="row-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2DAA50" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+                <div class="row-info"><div class="row-name">Milk</div><div class="row-cat">Dairy</div></div>
+                <div><div class="row-days c-grn">10 days</div><div class="row-date">May 20</div></div>
+              </div>
+            </div>
+            <div class="app-tabbar">
+              <div class="tab on"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1" opacity=".3"/><rect x="3" y="14" width="7" height="7" rx="1" opacity=".3"/><rect x="14" y="14" width="7" height="7" rx="1" opacity=".3"/></svg>Home</div>
+              <div class="tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="3"/></svg>Scan</div>
+              <div class="tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="10" width="4" height="10" rx="1"/><rect x="9" y="6" width="4" height="14" rx="1"/><rect x="16" y="2" width="4" height="18" rx="1"/></svg>Stats</div>
+              <div class="tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating notification — after phone so it paints on top -->
+        <div class="float-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
+          </div>
+          <div>
+            <div class="pill-app">frivo</div>
+            <div class="pill-text">Greek Yogurt expires tomorrow</div>
+          </div>
+          <div class="pill-time">now</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENTO FEATURES -->
+<section class="features" id="features">
+  <div class="feat-inner">
+    <div class="feat-header">
+      <div>
+        <div class="feat-eyebrow">What frivo does</div>
+        <h2 class="feat-h2">Built around how<br>you actually live.</h2>
+      </div>
+      <p class="feat-sub">Three things frivo does that your memory can't.</p>
+    </div>
+    <div class="bento">
+
+      <!-- Card 1: Scan (wide, dark) -->
+      <div class="bcard bc-scan bc1 reveal">
+        <div class="bcard-vis">
+          <div class="barcode-wrap">
+            <div class="barcode-inner">
+              <svg class="barcode-svg" viewBox="0 0 180 60" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0"   width="3" height="60"/><rect x="5"   width="1" height="60"/>
+                <rect x="8"   width="4" height="60"/><rect x="14"  width="2" height="60"/>
+                <rect x="18"  width="1" height="60"/><rect x="21"  width="3" height="60"/>
+                <rect x="26"  width="1" height="60"/><rect x="29"  width="2" height="60"/>
+                <rect x="33"  width="4" height="60"/><rect x="39"  width="1" height="60"/>
+                <rect x="42"  width="3" height="60"/><rect x="47"  width="2" height="60"/>
+                <rect x="51"  width="1" height="60"/><rect x="54"  width="4" height="60"/>
+                <rect x="60"  width="2" height="60"/><rect x="64"  width="1" height="60"/>
+                <rect x="67"  width="3" height="60"/><rect x="72"  width="1" height="60"/>
+                <rect x="75"  width="2" height="60"/><rect x="79"  width="4" height="60"/>
+                <rect x="85"  width="1" height="60"/><rect x="88"  width="3" height="60"/>
+                <rect x="93"  width="2" height="60"/><rect x="97"  width="1" height="60"/>
+                <rect x="100" width="4" height="60"/><rect x="106" width="1" height="60"/>
+                <rect x="109" width="2" height="60"/><rect x="113" width="3" height="60"/>
+                <rect x="118" width="1" height="60"/><rect x="121" width="4" height="60"/>
+                <rect x="127" width="2" height="60"/><rect x="131" width="1" height="60"/>
+                <rect x="134" width="3" height="60"/><rect x="139" width="1" height="60"/>
+                <rect x="142" width="2" height="60"/><rect x="146" width="4" height="60"/>
+                <rect x="152" width="1" height="60"/><rect x="155" width="3" height="60"/>
+                <rect x="160" width="2" height="60"/><rect x="164" width="1" height="60"/>
+                <rect x="167" width="4" height="60"/><rect x="173" width="1" height="60"/>
+                <rect x="176" width="4" height="60"/>
+              </svg>
+              <div class="scan-glow"></div>
+            </div>
+            <div class="barcode-number">4 088 600 123 456</div>
+          </div>
+        </div>
+        <div class="bcard-text">
+          <div class="bcard-title">Scan any barcode, instantly</div>
+          <p class="bcard-desc">Point your camera at a product label and frivo identifies it in under a second — no typing, no searching.</p>
+        </div>
+      </div>
+
+      <!-- Card 2: Track (narrow, white) -->
+      <div class="bcard bc-track reveal">
+        <div class="bcard-vis" style="padding:28px 24px 16px;align-items:flex-start">
+          <div class="mini-list" style="width:100%">
+            <div class="mini-row">
+              <div class="mini-dot" style="background:#FF3B30"></div>
+              <div class="mini-name">Greek Yogurt</div>
+              <div class="mini-days c-red">2 days</div>
+            </div>
+            <div class="mini-row">
+              <div class="mini-dot" style="background:#FF9500"></div>
+              <div class="mini-name">Strawberries</div>
+              <div class="mini-days c-amb">4 days</div>
+            </div>
+            <div class="mini-row">
+              <div class="mini-dot" style="background:#2DAA50"></div>
+              <div class="mini-name">Milk</div>
+              <div class="mini-days c-grn">10 days</div>
+            </div>
+          </div>
+        </div>
+        <div class="bcard-text">
+          <div class="bcard-title">Always know what's next</div>
+          <p class="bcard-desc">Your full inventory sorted by urgency. Red means today. You never have to guess.</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Remind (narrow, warm yellow) -->
+      <div class="bcard bc-remind reveal">
+        <div class="bcard-vis" style="padding:28px 24px 16px;align-items:flex-start">
+          <div class="notif-card">
+            <div class="notif-top">
+              <div class="notif-app-ico">
+                <svg width="12" height="12" viewBox="0 0 32 32" fill="none"><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
+              </div>
+              <span class="notif-app-name">frivo</span>
+              <span class="notif-time-lbl">now</span>
+            </div>
+            <div class="notif-title">Yogurt expires tomorrow</div>
+            <div class="notif-body">Don't forget — it's still good today.</div>
+          </div>
+        </div>
+        <div class="bcard-text">
+          <div class="bcard-title">Reminded at the right moment</div>
+          <p class="bcard-desc">Not too early to ignore, not too late to act. You still have time.</p>
+        </div>
+      </div>
+
+      <!-- Card 4: Insight (wide, near black) -->
+      <div class="bcard bc-insight bc4 reveal">
+        <div class="bcard-vis">
+          <div class="week-view">
+            <div class="week-day"><div class="wd-label">Mon</div><div class="wd-dots"><div class="wd-dot" style="background:#FF3B30"></div><div class="wd-dot" style="background:#FF9500"></div></div></div>
+            <div class="week-day"><div class="wd-label">Tue</div><div class="wd-dots"><div class="wd-dot" style="background:#FF9500"></div></div></div>
+            <div class="week-day"><div class="wd-label">Wed</div><div class="wd-dots"><div class="wd-empty"></div></div></div>
+            <div class="week-day"><div class="wd-label">Thu</div><div class="wd-dots"><div class="wd-dot" style="background:#2DAA50"></div><div class="wd-dot" style="background:#2DAA50"></div></div></div>
+            <div class="week-day"><div class="wd-label">Fri</div><div class="wd-dots"><div class="wd-dot" style="background:#2DAA50"></div></div></div>
+            <div class="week-day"><div class="wd-label">Sat</div><div class="wd-dots"><div class="wd-empty"></div></div></div>
+            <div class="week-day"><div class="wd-label">Sun</div><div class="wd-dots"><div class="wd-dot" style="background:#2DAA50"></div></div></div>
+          </div>
+        </div>
+        <div class="bcard-text">
+          <div class="bcard-title">Your whole week, at a glance</div>
+          <p class="bcard-desc">See exactly which days you need to use something — and plan meals around what's already in your fridge.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="hiw" id="how-it-works">
+  <div class="hiw-inner">
+    <div class="hiw-head">
+      <div class="hiw-eyebrow">How it works</div>
+      <h2 class="hiw-h2">Takes 30 seconds.<br>Saves you hundreds.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">Unpack at home, scan as you go</div>
+        <p class="step-desc">After you get back from the shop, open frivo and scan each item once. Thirty seconds for a full bag of groceries.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <div class="step-title">Your fridge, always organized</div>
+        <p class="step-desc">Everything sorted by when it expires. No shelf diving, no squinting at tiny dates. Your whole fridge in your pocket.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <div class="step-title">Eat what you have, not what you buy</div>
+        <p class="step-desc">frivo nudges you before things go bad. Less impulse shopping, less waste, less money in the bin at the end of the week.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST — dark -->
+<section class="waitlist" id="waitlist">
+  <div class="wl-inner">
+    <div class="wl-eyebrow">Early access</div>
+    <h2 class="wl-h2">Be first in line.</h2>
+    <p class="wl-body">frivo launches soon on iOS and Android. Drop your email and we'll reach out the moment it's ready to download.</p>
+    <div class="wl-count" id="wl-count">
+      <div class="wl-count-dot"></div>
+      <span id="wl-count-num">0</span>&thinsp;people already waiting
+    </div>
+    <form class="wl-form" id="wl-form">
+      <input class="wl-input" type="email" name="email" placeholder="your@email.com" required autocomplete="email"/>
+      <button type="submit" class="wl-submit" id="wl-btn">Notify me</button>
+    </form>
+    <div class="success" id="success">
+      <div class="success-check">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2DAA50" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-h">You're on the list.</div>
+      <p class="success-p">We'll reach out at launch. Thanks for the support.</p>
+    </div>
+    <p class="wl-note">No spam. Unsubscribe anytime.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-inner">
+    <div class="ft-top">
+      <div>
+        <a href="#" class="ft-logo">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="rgba(255,255,255,.08)"/><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
+          <span>frivo</span>
+        </a>
+        <div class="ft-tagline">Never miss an expiration.</div>
+        <div class="ft-email"><a href="mailto:office@frivo.me">office@frivo.me</a></div>
+      </div>
+      <div class="ft-nav">
+        <div class="ft-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#waitlist">Join waitlist</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><button onclick="openModal('impressum')">Impressum</button></li>
+            <li><button onclick="openModal('datenschutz')">Datenschutz</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div class="ft-copy">© 2026 frivo. All rights reserved.</div>
+      <div class="ft-legal">
+        <button onclick="openModal('impressum')">Impressum</button>
+        <button onclick="openModal('datenschutz')">Datenschutzerklärung</button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL: IMPRESSUM -->
+<div class="modal-bg" id="modal-impressum" onclick="closeModal('impressum')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('impressum')">✕</button>
+    <div class="modal-handle"></div>
+    <h2>Impressum</h2>
+    <p class="modal-sub">Angaben gemäß § 5 ECG (E-Commerce-Gesetz)</p>
+    <h3>Medieninhaber &amp; Herausgeber</h3>
+    <p><strong>Daniel Dshajani</strong><br>Gärtnergasse 4/3<br>1030 Wien<br>Österreich</p>
+    <h3>Kontakt</h3>
+    <p>E-Mail: <a href="mailto:office@frivo.me">office@frivo.me</a><br>Website: <a href="https://frivo.me">https://frivo.me</a></p>
+    <h3>Unternehmensgegenstand</h3>
+    <p>Entwicklung und Betrieb der mobilen Applikation „frivo" zur Verwaltung von Lebensmittelablaufdaten.</p>
+    <h3>Online-Streitbeilegung</h3>
+    <p>Plattform der EU-Kommission: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>. Wir sind nicht verpflichtet, an einem Schlichtungsverfahren teilzunehmen.</p>
+    <h3>Haftungshinweis</h3>
+    <p>Für Inhalte externer verlinkter Seiten übernehmen wir keine Haftung. Verantwortlich sind ausschließlich die jeweiligen Betreiber.</p>
+  </div>
+</div>
+
+<!-- MODAL: DATENSCHUTZ -->
+<div class="modal-bg" id="modal-datenschutz" onclick="closeModal('datenschutz')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('datenschutz')">✕</button>
+    <div class="modal-handle"></div>
+    <h2>Datenschutzerklärung</h2>
+    <p class="modal-sub">Zuletzt aktualisiert: April 2026</p>
+    <div class="note-box">Alle Platzhalter in eckigen Klammern vor dem Go-live befüllen.</div>
+    <h3>1. Verantwortlicher</h3>
+    <p><strong>Daniel Dshajani</strong><br>Gärtnergasse 4/3, 1030 Wien, Österreich<br>E-Mail: <a href="mailto:office@frivo.me">office@frivo.me</a></p>
+    <h3>2. Erhobene Daten</h3>
+    <p>Über das Waitlist-Formular erheben wir ausschließlich deine <strong>E-Mail-Adresse</strong>, um dich beim App-Launch zu benachrichtigen.</p>
+    <h3>3. Zweck &amp; Rechtsgrundlage</h3>
+    <p>Die Verarbeitung erfolgt auf Basis deiner freiwilligen Einwilligung gemäß <strong>Art. 6 Abs. 1 lit. a DSGVO</strong>. Widerruf jederzeit möglich.</p>
+    <h3>4. Drittanbieter</h3>
+    <p><strong>Google Firebase / Firestore</strong> (Google LLC, USA): Zur Speicherung der Waitlist-E-Mail-Adressen. Rechtsgrundlage Art. 6 Abs. 1 lit. a DSGVO, Übermittlung auf Basis von EU-Standardvertragsklauseln (Art. 46 DSGVO). <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase Privacy</a>.</p>
+    <p><strong>Google Analytics via Firebase Analytics</strong> (Google LLC, USA): Zur Analyse des Nutzungsverhaltens auf dieser Website. Nur nach deiner ausdrücklichen Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Widerruf jederzeit über den Cookie-Banner möglich. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>.</p>
+    <h3>5. Speicherdauer</h3>
+    <p>Deine E-Mail wird gespeichert bis zum Widerruf deiner Einwilligung. Abmeldung per E-Mail an <a href="mailto:office@frivo.me">office@frivo.me</a>.</p>
+    <h3>6. Deine Rechte</h3>
+    <p>Auskunft (Art. 15) · Berichtigung (Art. 16) · Löschung (Art. 17) · Einschränkung (Art. 18) · Widerspruch (Art. 21) · Datenportabilität (Art. 20)<br>Anfragen an: <a href="mailto:office@frivo.me">office@frivo.me</a></p>
+    <h3>7. Beschwerderecht</h3>
+    <p><strong>Datenschutzbehörde Österreich</strong>, Barichgasse 40–42, 1030 Wien — <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">www.dsb.gv.at</a></p>
+    <h3>8. Cookies &amp; Tracking</h3>
+    <p>Diese Website verwendet <strong>Google Analytics</strong> (nur nach deiner Einwilligung) sowie technisch notwendige localStorage-Einträge zur Speicherung deiner Cookie-Entscheidung. Ohne Einwilligung werden keine Analytics-Cookies gesetzt.</p>
+  </div>
+</div>
+
+<!-- COOKIE -->
+<div class="cookie" id="cookie">
+  <div class="cookie-txt"><strong>Cookies</strong> — Wir nutzen Google Analytics (nur mit Einwilligung) und notwendige Cookies. <button onclick="openModal('datenschutz')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline">Mehr</button></div>
+  <div class="cookie-btns">
+    <button class="cookie-decline" onclick="rejectAnalytics()">Ablehnen</button>
+    <button class="cookie-accept" onclick="acceptAnalytics()">Akzeptieren</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js';
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyCs-87h7GzbmQ8wOSEAj07ol9ExsLuHKjE",
+  authDomain:        "frivo-dded0.firebaseapp.com",
+  projectId:         "frivo-dded0",
+  storageBucket:     "frivo-dded0.firebasestorage.app",
+  messagingSenderId: "258456219102",
+  appId:             "1:258456219102:web:ff5d9816cba6e3f1c0414f",
+  measurementId:     "G-5VXFKS6VQ2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+if (localStorage.getItem('frivo_analytics') === 'yes') {
+  getAnalytics(app);
+}
+window.__enableAnalytics = () => { try { getAnalytics(app); } catch(_) {} };
+
+// Load real waitlist count
+const statsRef = doc(db, 'meta', 'stats');
+(async () => {
+  try {
+    const snap = await getDoc(statsRef);
+    if (snap.exists()) {
+      const n = snap.data().waitlistCount || 0;
+      if (n > 0) animateCount(n);
+    }
+  } catch(_) {}
+})();
+
+function animateCount(target) {
+  const el = document.getElementById('wl-count-num');
+  const counter = document.getElementById('wl-count');
+  counter.classList.add('visible');
+  const duration = 1400;
+  const start = performance.now();
+  const tick = now => {
+    const p = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(eased * target).toLocaleString();
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+const form = document.getElementById('wl-form');
+const btn  = document.getElementById('wl-btn');
+const done = document.getElementById('success');
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = form.email.value.trim();
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, 'waitlist'), { email, createdAt: serverTimestamp(), source: 'website' });
+    // Increment counter (silently ignore if rules not set up yet)
+    setDoc(statsRef, { waitlistCount: increment(1) }, { merge: true }).catch(() => {});
+    form.style.display = 'none';
+    done.classList.add('show');
+  } catch(err) {
+    console.error(err);
+    btn.textContent = 'Notify me';
+    btn.disabled = false;
+    alert('Something went wrong. Please email office@frivo.me directly.');
+  }
+});
+</script>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20), {passive:true});
+
+const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in') }), {threshold:.08});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+function openModal(id) { document.getElementById('modal-'+id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById('modal-'+id).classList.remove('open'); document.body.style.overflow=''; }
+window.openModal = openModal; window.closeModal = closeModal;
+document.addEventListener('keydown', e => { if(e.key==='Escape') ['impressum','datenschutz'].forEach(closeModal); });
+
+if (!localStorage.getItem('frivo_c')) setTimeout(() => document.getElementById('cookie').classList.add('show'), 1800);
+function acceptAnalytics() { localStorage.setItem('frivo_c','1'); localStorage.setItem('frivo_analytics','yes'); window.__enableAnalytics?.(); document.getElementById('cookie').classList.remove('show'); }
+function rejectAnalytics() { localStorage.setItem('frivo_c','1'); localStorage.setItem('frivo_analytics','no'); document.getElementById('cookie').classList.remove('show'); }
+window.acceptAnalytics = acceptAnalytics; window.rejectAnalytics = rejectAnalytics;
+</script>
+</body>
+</html>

@@ -8,8 +8,8 @@
 <meta property="og:description" content="Scan. Track. Enjoy."/>
 <meta property="og:url" content="https://frivo.me"/>
 <title>frivo — Never miss an expiration.</title>
-<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
-<link rel="apple-touch-icon" href="favicon.svg"/>
+<link rel="icon" type="image/jpeg" href="logo.jpg"/>
+<link rel="apple-touch-icon" href="logo.jpg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -95,7 +95,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
 /* floating notification near phone */
 .float-pill{position:absolute;bottom:100px;left:-196px;background:var(--white);border-radius:14px;padding:12px 14px;box-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:10px;width:210px;animation:lift2 7s ease-in-out 1.5s infinite;border:1px solid var(--border);z-index:5}
 @keyframes lift2{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.pill-icon{width:28px;height:28px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-img{display:inline-block;flex-shrink:0;border-radius:8px;background:url(logo.jpg) center/135% 135% no-repeat}
+.pill-icon{width:28px;height:28px;border-radius:8px;background:url(logo.jpg) center/135% 135% no-repeat;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pill-app{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.2px}
 .pill-text{font-size:12px;font-weight:600;color:var(--navy);line-height:1.35;margin-top:1px}
 .pill-time{font-size:10px;color:var(--muted);position:absolute;top:12px;right:14px}
@@ -149,7 +150,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
 .bc-remind .bcard-desc{color:rgba(27,32,51,.55)}
 .notif-card{width:100%;max-width:240px;background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:0 6px 24px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.05)}
 .notif-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.notif-app-ico{width:22px;height:22px;border-radius:6px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notif-app-ico{width:22px;height:22px;border-radius:6px;background:url(logo.jpg) center/135% 135% no-repeat;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .notif-app-name{font-size:11px;font-weight:700;color:var(--muted);flex:1}
 .notif-time-lbl{font-size:10.5px;color:var(--muted)}
 .notif-title{font-size:13px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:3px}
@@ -268,12 +269,7 @@ footer{background:#11151F;padding:56px 80px 36px}
 <!-- NAV -->
 <nav class="nav" id="nav">
   <a href="#" class="logo">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="#1B2033"/>
-      <path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/>
-      <path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/>
-      <path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/>
-    </svg>
+    <span class="logo-img" style="width:32px;height:32px"></span>
     <span class="logo-name">frivo</span>
   </a>
   <ul class="nav-links">
@@ -304,7 +300,7 @@ footer{background:#11151F;padding:56px 80px 36px}
             <div class="d-island"></div>
             <div class="app-bar">
               <div class="app-brand">
-                <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#1B2033"/><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
+                <span class="logo-img" style="width:18px;height:18px;border-radius:5px"></span>
                 frivo
               </div>
               <div class="app-actions">
@@ -351,8 +347,7 @@ footer{background:#11151F;padding:56px 80px 36px}
         <!-- Floating notification — after phone so it paints on top -->
         <div class="float-pill">
           <div class="pill-icon">
-            <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
-          </div>
+                      </div>
           <div>
             <div class="pill-app">frivo</div>
             <div class="pill-text">Greek Yogurt expires tomorrow</div>
@@ -449,8 +444,7 @@ footer{background:#11151F;padding:56px 80px 36px}
           <div class="notif-card">
             <div class="notif-top">
               <div class="notif-app-ico">
-                <svg width="12" height="12" viewBox="0 0 32 32" fill="none"><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
-              </div>
+                              </div>
               <span class="notif-app-name">frivo</span>
               <span class="notif-time-lbl">now</span>
             </div>
@@ -545,7 +539,7 @@ footer{background:#11151F;padding:56px 80px 36px}
     <div class="ft-top">
       <div>
         <a href="#" class="ft-logo">
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="rgba(255,255,255,.08)"/><path d="M9.5 17.5 Q11 10 21 9.5 Q24.5 9.5 24.5 13 Q17 13 14.5 17.5 Z" fill="#F6C94A"/><path d="M9.5 17.5 Q9 23.5 12.5 26 Q16 22.5 16.5 18.5 Q15 14.5 12 14.5 Z" fill="#EDE9DE"/><path d="M13 24 Q15.5 21.5 18.5 23 Q17 26.5 14 26.5 Z" fill="#6B8C55"/></svg>
+          <span class="logo-img" style="width:28px;height:28px"></span>
           <span>frivo</span>
         </a>
         <div class="ft-tagline">Never miss an expiration.</div>
